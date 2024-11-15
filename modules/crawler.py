@@ -97,29 +97,72 @@ def scraping(url):
     }
     # for key, value in paper.items():
         # print(f'{value}:{type(value)}')
-    with open('paper.json', 'w') as file:
-        json.dump(paper, file, indent=4, ensure_ascii=False)
     return paper
 
+# Salva todos os artigos encontrados em um único arquivo JSON
 def search_by_title(title):
     papers = []
     base_url = 'https://www.periodicos.capes.gov.br/index.php/acervo/buscador.html?q='
-    title = title.strip().split(' ')
-    title = '+'.join(title)
-    base_url += title
-    soup = get_soup(base_url)
-    results = soup.find('div', attrs={'id':'resultados'})
+    title_encoded = '+'.join(title.strip().split())
+    full_url = base_url + title_encoded
+    soup = get_soup(full_url)
+    results = soup.find('div', attrs={'id': 'resultados'})
+    if not results:
+        print("Nenhum resultado encontrado.")
+        return papers
+    
     results_divs = results.find_all('div', class_='row')
     for div in results_divs:
         if 'Acesso aberto' in div.text:
-            paper_url = div.find('a', attrs={'class':'titulo-busca'})
-            if paper_url is None:
-                continue
-            # print(DOMAIN + paper_url.get('href'))
-            paper = scraping(DOMAIN + paper_url.get('href'))
-            papers.append(paper)
+            paper_url = div.find('a', attrs={'class': 'titulo-busca'})
+            if paper_url:
+                paper = scraping(DOMAIN + paper_url.get('href'))
+                papers.append(paper)
+
+    # Salva todos os artigos encontrados em um único arquivo JSON
+    with open('papers.json', 'w', encoding='utf-8') as file:
+        json.dump(papers, file, indent=4, ensure_ascii=False)
     return papers
 
+def search_by_type_publication(type_publication):
+    papers_1 = []
+    base_url = 'https://www.periodicos.capes.gov.br/index.php/acervo/buscador.html?q='
+    type_publication_encoded = '+'.join(type_publication.strip().split())
+    full_url = base_url + type_publication_encoded
+    soup = get_soup(full_url)
+    results = soup.find('div', attrs={'id': 'resultados'})
+    if not results:
+        print("Nenhum resultado encontrado.")
+        return papers_1
+    
+    results_divs = results.find_all('div', class_='row')
+    for div in results_divs:
+        if 'Acesso aberto' in div.text:
+            paper_url = div.find('a', attrs={'class': 'titulo-busca'})
+            if paper_url:
+                paper = scraping(DOMAIN + paper_url.get('href'))
+                papers_1.append(paper)
+
+    # Salva todos os artigos encontrados em um único arquivo JSON
+    with open('papers.json', 'w', encoding='utf-8') as file:
+        json.dump(papers_1, file, indent=4, ensure_ascii=False)
+    return papers_1
+
+
+
+
 if __name__ == '__main__':
-    search_by_title('RepositORE Sebastião Alves')
+    #search_by_title('RepositORE Sebastião Alves')
+    title = input("Digite o título do artigo que deseja pesquisar: ")
+    results = search_by_title(title)
+    #type_publication = "Artigo"  # Ou qualquer outro tipo de material
+    #results = search_by_type_publication(type_publication)
+    #if results:
+      #  print(f"Foram encontrados {len(results)} artigos.")
+    #else:
+       # print("Nenhum artigo encontrado com o título especificado.")
+    if results:
+        print(f"Foram encontrados {len(results)} artigos.")
+    else:
+        print("Nenhum artigo encontrado com o título especificado.")   
     # crawl('https://www.periodicos.capes.gov.br/index.php/acervo/buscador.html?q=RepositORE+Sebasti%C3%A3o+Alves')

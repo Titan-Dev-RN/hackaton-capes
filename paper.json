@@ -1,0 +1,24 @@
+{
+    "title": "COGNITIO: UM PROCESSO PARA REUSO DE REQUISITOS",
+    "source_url_paper": "https://doi.org/10.15628/holos.2010.488",
+    "type_publication": "Artigo",
+    "revisor": "pares",
+    "country_paper": "Brasil",
+    "open_access": true,
+    "year": "2010;",
+    "instituto": "INSTITUTO FEDERAL DO RIO GRANDE DO NORTE",
+    "volume": "4",
+    "issue": null,
+    "language": "Português",
+    "doi": "10.15628/holos.2010.488",
+    "issn": "1807-1600",
+    "authors": [
+        "Ceres Germanna Braga Morais",
+        "Jezmael De Oliveira Basilio",
+        "Lyrene Fernandes da Silva",
+        "Thalles Robson de Barbalho"
+    ],
+    "topics": "Autonomic Computing and Self-Adaptive Systems",
+    "resume": "Este artigo apresenta um processo de reuso de requisitos, denominado Cognitio, o qual busca fornecer ganhos na produtividade e qualidade dos softwares gerados, de forma que os stakeholders se sintam motivados tanto para desenvolver software com reuso quanto para o reuso. Para a formação do repositório, organizamos as informações relacionadas aos requisitos através da linguagem Q7, e apresentamos através do framework NFR como o nosso processo pode ser aplicado.",
+    "cited_by": []
+}
