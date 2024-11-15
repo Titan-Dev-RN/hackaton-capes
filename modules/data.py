@@ -1,4 +1,5 @@
 import pandas as pd
+import json
 
 def get_dataframe(data):
     for item in data:
@@ -10,3 +11,6 @@ def get_dataframe(data):
     # print(df.head())  # Para verificar o DataFrame
     # print(df)
     return df
+
+def get_json(data):
+    return json.dumps({'papers': data})

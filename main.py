@@ -12,8 +12,8 @@ async def search_by_title(title: str, prompt:str):
     prompt = sanitize_input(prompt)
     print(prompt)
     papers = md.search_by_title(title)
-    df = md.get_dataframe(papers)
-    return md.return_response(df, prompt)
+    df = md.get_json(papers)
+    # return md.return_response(df, prompt)
 
 if __name__ == '__main__':
 	# papers = md.search_by_title('medicine')
