@@ -1,0 +1,9 @@
+pandasai==2.3.0
+requests==2.32.3
+fastapi==0.115.5
+bs4==0.0.2
+numpy==1.26.4
+PyYAML==6.0.2
+requests-html==0.10.0
+lxml_html_clean==0.4.1
+uvicorn==0.32.0

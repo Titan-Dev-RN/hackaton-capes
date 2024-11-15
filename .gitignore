@@ -1,0 +1,8 @@
+__pycache__/
+test.py
+venv/
+.vscode/
+pandasai.log
+/cache
+/exports
+api_key.json
