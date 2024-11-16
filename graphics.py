@@ -3,6 +3,7 @@ import pandas as pd
 import plotly.express as px
 from textblob import TextBlob
 from transformers import pipeline
+from flask import Flask
 import dash
 from dash import dcc, html
 from dash.dependencies import Input, Output
@@ -86,46 +87,63 @@ grafico_sentimentos = px.histogram(
     nbins=len(df['sentimento'].unique())
 )
 
-# Iniciando o aplicativo Dash
-app = dash.Dash(__name__)
+# Inicializando o servidor Flask
+server = Flask(__name__)
 
-# Layout do Dash com todos os gráficos e o dropdown de escolha da análise
+# Inicializando o Dash com Flask
+app = dash.Dash(__name__, server=server, url_base_pathname='/')
+
+# Layout redesenhado
 app.layout = html.Div([
-    html.H1("Análise de Artigos Acadêmicos", style={'textAlign': 'center'}),
-    
-    # Dropdown para escolher o método de análise
+    # Cabeçalho
     html.Div([
+        html.H1("Dashboard de Análise de Artigos Acadêmicos", style={'color': '#ffffff'}),
+        html.P("Análise interativa de artigos acadêmicos por ano, idioma, país e sentimentos.",
+               style={'color': '#ffffff'})
+    ], style={
+        'backgroundColor': '#1f2c56',
+        'padding': '20px',
+        'textAlign': 'center',
+        'marginBottom': '20px'
+    }),
+
+    # Filtros
+    html.Div([
+        html.Label("Escolha o método de análise de sentimentos:", style={'fontWeight': 'bold'}),
         dcc.Dropdown(
             id='dropdown-analise',
             options=[
                 {'label': 'Análise Simples (TextBlob)', 'value': 'simples'},
                 {'label': 'Análise Avançada (Transformers)', 'value': 'avancado'}
             ],
-            value='simples',  # Valor padrão
+            value='simples',
             style={'width': '50%', 'margin': 'auto'}
         )
-    ], style={'textAlign': 'center'}),
-    
-    # Gráfico 1: Distribuição de artigos por ano
-    html.Div([
-        dcc.Graph(id='grafico-ano')
-    ], style={'width': '48%', 'display': 'inline-block'}),
-    
-    # Gráfico 2: Distribuição de artigos por idioma
-    html.Div([
-        dcc.Graph(id='grafico-idioma')
-    ], style={'width': '48%', 'display': 'inline-block'}),
+    ], style={'padding': '10px', 'backgroundColor': '#f8f9fa', 'marginBottom': '20px'}),
 
-    # Gráfico 3: Distribuição de artigos por país
+    # Container dos gráficos
     html.Div([
-        dcc.Graph(id='grafico-pais')
-    ], style={'width': '48%', 'display': 'inline-block'}),
+        # Linha 1: Gráficos lado a lado
+        html.Div([
+            html.Div([
+                dcc.Graph(id='grafico-ano')
+            ], style={'width': '48%', 'display': 'inline-block', 'padding': '10px'}),
+            html.Div([
+                dcc.Graph(id='grafico-idioma')
+            ], style={'width': '48%', 'display': 'inline-block', 'padding': '10px'}),
+        ], style={'display': 'flex', 'justifyContent': 'space-between'}),
 
-    # Gráfico 5: Análise de sentimentos dos artigos
-    html.Div([
-        dcc.Graph(id='grafico-sentimentos')
-    ], style={'width': '48%', 'display': 'inline-block'})
-])
+        # Linha 2: Gráficos lado a lado
+        html.Div([
+            html.Div([
+                dcc.Graph(id='grafico-pais')
+            ], style={'width': '48%', 'display': 'inline-block', 'padding': '10px'}),
+            html.Div([
+                dcc.Graph(id='grafico-sentimentos')
+            ], style={'width': '48%', 'display': 'inline-block', 'padding': '10px'}),
+        ], style={'display': 'flex', 'justifyContent': 'space-between'}),
+    ], style={'padding': '20px'}),
+], style={'fontFamily': 'Arial, sans-serif', 'backgroundColor': '#f4f4f4'})
 
 # Atualizando os gráficos com base na escolha do método de análise
 @app.callback(
@@ -142,7 +160,7 @@ def atualizar_graficos(metodo_analise):
     # Adicionando os resultados da análise de sentimentos ao DataFrame original
     df['sentimento'] = df_sentimentos['sentimento']
     df['score'] = df_sentimentos['score']
-    
+
     # Recriar os gráficos com base no novo método de análise
     grafico_ano = px.histogram(
         df,
@@ -178,6 +196,6 @@ def atualizar_graficos(metodo_analise):
     # Retornar as figuras atualizadas
     return grafico_ano, grafico_idioma, grafico_pais, grafico_sentimentos
 
-# Rodando o servidor Dash
+# Rodando o servidor Flask com Dash
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    server.run(debug=True)

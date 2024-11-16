@@ -151,18 +151,14 @@ def search_by_type_publication(type_publication):
 
 
 
-if __name__ == '__main__':
+#if __name__ == '__main__':
     #search_by_title('RepositORE Sebastião Alves')
-    title = input("Digite o título do artigo que deseja pesquisar: ")
-    results = search_by_title(title)
+    #title = input("Digite o título do artigo que deseja pesquisar: ")
+    #results = search_by_title(title)
     #type_publication = "Artigo"  # Ou qualquer outro tipo de material
     #results = search_by_type_publication(type_publication)
     #if results:
       #  print(f"Foram encontrados {len(results)} artigos.")
     #else:
        # print("Nenhum artigo encontrado com o título especificado.")
-    if results:
-        print(f"Foram encontrados {len(results)} artigos.")
-    else:
-        print("Nenhum artigo encontrado com o título especificado.")   
     # crawl('https://www.periodicos.capes.gov.br/index.php/acervo/buscador.html?q=RepositORE+Sebasti%C3%A3o+Alves')
