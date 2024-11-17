@@ -7,6 +7,8 @@ from flask import Flask
 import dash
 from dash import dcc, html
 from dash.dependencies import Input, Output
+import plotly.io as pio
+import plotly.express as px
 
 # Função para analisar o sentimento com a IA simples (TextBlob)
 def analise_sentimento_simples(texto):
@@ -195,6 +197,14 @@ def atualizar_graficos(metodo_analise):
 
     # Retornar as figuras atualizadas
     return grafico_ano, grafico_idioma, grafico_pais, grafico_sentimentos
+    # Converte os gráficos para HTML
+    #grafico_ano_html = pio.to_html(grafico_ano, full_html=False)
+    #grafico_idioma_html = pio.to_html(grafico_idioma, full_html=False)
+    #grafico_pais_html = pio.to_html(grafico_pais, full_html=False)
+    #grafico_sentimentos_html = pio.to_html(grafico_sentimentos, full_html=False)
+
+    # Retorna os gráficos como HTML
+    #return grafico_ano_html, grafico_idioma_html, grafico_pais_html, grafico_sentimentos_html
 
 # Rodando o servidor Flask com Dash
 if __name__ == '__main__':

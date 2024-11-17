@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, render_template_string, redirect, url_for, session
 from modules import search_by_title  # Importa a função do arquivo crawler.py
-import graphics
+from graphics import atualizar_graficos
 
 app = Flask(__name__)
 
