@@ -42,7 +42,7 @@ Baixe as depêndencias:
 pip install -r requirements.txt
 ```
 
-Rodar o backend:
+Rodar o projeto:
 ```bash
 python index.py
 ```
