@@ -26,6 +26,12 @@ Web Scraping: Utiliza técnicas de scraping para coletar dados de sites externos
 Session Management: Armazenamento de dados temporários do usuário entre requisições.
 JSON: Formato utilizado para armazenar e compartilhar os resultados do scraping.
 
+Clone o repositório e entre na pasta do projeto
+```bash
+git clone https://github.com/Titan-Dev-RN/hackaton-capes.git
+cd hackaton-capes
+```
+
 Usar um ambiente container (opcional)
 ```bash
 python -m venv venv && source venv/bin/activate
