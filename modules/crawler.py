@@ -24,9 +24,8 @@ def scraping(url):
     source_url_paper = soup.find('a', attrs={'id':'item-acessar'}).get('href')
     # print(source_url_paper)
     if source_url_paper.startswith('/index.php') :
-        page = get_soup(DOMAIN + source_url_paper)
-    else:
-        page = get_soup(source_url_paper)
+        source_url_paper = DOMAIN + source_url_paper
+        # page = get_soup(DOMAIN + source_url_paper)
     paper_title = soup.find('h5', attrs={'id':'item-titulo'})
     paper_title = get_text(paper_title)
     type_publication = soup.find('strong', attrs={'id':'type-publicacao'})
