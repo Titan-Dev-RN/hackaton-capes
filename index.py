@@ -1,10 +1,10 @@
 from flask import Flask, request, jsonify, render_template_string, redirect, url_for, session
 from modules import search_by_title  # Importa a função do arquivo crawler.py
-from graphics import atualizar_graficos
+from graphics import server  
 
-app = Flask(__name__)
+app = server  # Usa o servidor Flask compartilhado do Dash
 
-app.secret_key = 'secret_key'  # Necessário para usar sessões
+#app.secret_key = 'secret_key'  # Necessário para usar sessões
 
 # HTML com CSS embutido
 HTML_TEMPLATE = """
@@ -102,11 +102,20 @@ HTML_TEMPLATE = """
     </div>
 
     <script>
-        document.getElementById("search-form").addEventListener("submit", function (event) {
+        const searchForm = document.getElementById("search-form");
+        const titleInput = document.getElementById("title-input");
+        const submitButton = searchForm.querySelector("button");
+
+        searchForm.addEventListener("submit", function (event) {
             event.preventDefault(); // Evita o envio padrão do formulário
-            const title = document.getElementById("title-input").value;
+
+            const title = titleInput.value;
 
             if (title.trim()) {
+                // Desativa o botão e exibe mensagem
+                submitButton.disabled = true;
+                submitButton.textContent = "Fazendo a requisição...";
+
                 fetch('/search', {
                     method: 'POST',
                     headers: {
@@ -116,15 +125,26 @@ HTML_TEMPLATE = """
                 })
                 .then(response => {
                     if (response.redirected) {
-                        window.location.href = response.url;  // Redireciona para a URL de gráficos
+                        window.location.href = response.url; // Redireciona para a URL de gráficos
+                    } else {
+                        throw new Error("Falha ao redirecionar.");
                     }
                 })
-                .catch(error => console.error("Erro na requisição:", error));
+                .catch(error => {
+                    console.error("Erro na requisição:", error);
+                    alert("Ocorreu um erro na requisição. Tente novamente.");
+                })
+                .finally(() => {
+                    // Habilita o botão novamente
+                    submitButton.disabled = false;
+                    submitButton.textContent = "Pesquisar";
+                });
             } else {
                 alert("Por favor, insira um título para pesquisar.");
             }
         });
     </script>
+
 </body>
 </html>
 """
@@ -157,7 +177,9 @@ def show_graphs():
 
     # Crie e retorne os gráficos (você pode adicionar a lógica de visualização aqui)
     #return f"Gráficos gerados com {len(results)} resultados!"
-    return atualizar_graficos('simples')
+    #return atualizar_graficos('simples')
+    # Redireciona para o painel do Dash
+    return redirect('/')
 
 
 if __name__ == '__main__':
