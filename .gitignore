@@ -5,4 +5,3 @@ venv/
 pandasai.log
 /cache
 /exports
-api_key.json
