@@ -3,6 +3,14 @@ from urllib.parse import quote
 import json
 from requests_html import HTMLSession
 import requests
+import time
+import uuid
+import os
+
+
+# Variável de controle global
+scraping_done = False
+
 DOMAIN = 'https://www.periodicos.capes.gov.br'
 
 def get_soup(url):
@@ -98,12 +106,34 @@ def scraping(url):
         # print(f'{value}:{type(value)}')
     return paper
 
+
+
+# Função para salvar os resultados de scraping em um arquivo único (sobrescrevendo sempre)
+def save_scraping_results(papers):
+    # Define o caminho fixo para o arquivo JSON
+    file_path = os.path.join('scraping_results', 'papers.json')
+    
+    # Cria o diretório, caso não exista
+    os.makedirs(os.path.dirname(file_path), exist_ok=True)
+    
+    # Salva os resultados no arquivo JSON, sobrescrevendo o conteúdo
+    with open(file_path, 'w', encoding='utf-8') as file:
+        json.dump(papers, file, indent=4, ensure_ascii=False)
+    
+    return 'papers.json'  # Retorna o nome do arquivo para ser armazenado na sessão
+
+
 # Salva todos os artigos encontrados em um único arquivo JSON
 def search_by_title(title):
+    global scraping_done
     papers = []
     base_url = 'https://www.periodicos.capes.gov.br/index.php/acervo/buscador.html?q='
     title_encoded = '+'.join(title.strip().split())
     full_url = base_url + title_encoded
+
+    print("Iniciando scraping...")
+    start_time = time.time()  # Marca o início do processamento
+
     soup = get_soup(full_url)
     results = soup.find('div', attrs={'id': 'resultados'})
     if not results:
@@ -118,10 +148,18 @@ def search_by_title(title):
                 paper = scraping(DOMAIN + paper_url.get('href'))
                 papers.append(paper)
 
-    # Salva todos os artigos encontrados em um único arquivo JSON
-    with open('papers.json', 'w', encoding='utf-8') as file:
-        json.dump(papers, file, indent=4, ensure_ascii=False)
-    return papers
+    # Salva os resultados no mesmo arquivo JSON, sobrescrevendo o conteúdo anterior
+    file_id = save_scraping_results(papers)
+
+    end_time = time.time()  # Marca o término do processamento
+    elapsed_time = end_time - start_time  # Calcula o tempo decorrido
+
+    print(f"Scraping finalizado. Tempo total: {elapsed_time:.2f} segundos.")
+    # Sinaliza que o scraping foi concluído
+    scraping_done = True
+    print(f"{scraping_done}")
+    
+    return file_id  # Retorna o nome do arquivo para ser armazenado na sessão
 
 def search_by_type_publication(type_publication):
     papers_1 = []

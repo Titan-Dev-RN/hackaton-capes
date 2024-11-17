@@ -1,10 +1,12 @@
 from flask import Flask, request, jsonify, render_template_string, redirect, url_for, session
-from modules import search_by_title  # Importa a função do arquivo crawler.py
+from modules.crawler import search_by_title, scraping_done  # Importa a função do arquivo crawler.py
 from graphics import server  
+import os
+import json
 
 app = server  # Usa o servidor Flask compartilhado do Dash
 
-#app.secret_key = 'secret_key'  # Necessário para usar sessões
+app.secret_key = 'secret_key'  # Necessário para usar sessões
 
 # HTML com CSS embutido
 HTML_TEMPLATE = """
@@ -130,10 +132,6 @@ HTML_TEMPLATE = """
                         throw new Error("Falha ao redirecionar.");
                     }
                 })
-                .catch(error => {
-                    console.error("Erro na requisição:", error);
-                    alert("Ocorreu um erro na requisição. Tente novamente.");
-                })
                 .finally(() => {
                     // Habilita o botão novamente
                     submitButton.disabled = false;
@@ -150,37 +148,62 @@ HTML_TEMPLATE = """
 """
 
 @app.route('/')
+def redirect_to_search():
+    # Redireciona para a página de pesquisa de artigos ao acessar a raiz
+    return redirect(url_for('home'))
+
+@app.route('/search')
 def home():
     return render_template_string(HTML_TEMPLATE)
+
 
 @app.route('/search', methods=['POST'])
 def search():
     data = request.json
     title = data.get("title", "")
-    results = search_by_title(title)
-    #return jsonify(results)
 
-    # Armazena os resultados na sessão
-    session['results'] = results
+    # Inicia o scraping e obtém o ID do arquivo
+    #papers = search_by_title(title)
+    search_by_title(title)
 
-    # Redireciona para a página de gráficos
+
+    # Caminho completo para o arquivo 'papers.json' na pasta 'scraping_results'
+    file_path = os.path.join('scraping_results', 'papers.json')
+    # Armazena o ID do arquivo na sessão
+    session['results_file_id'] = file_path
+
+        # Redireciona para a página de gráficos
     return redirect(url_for('show_graphs'))
+    #else:
+       # return jsonify({"error": "O scraping ainda não foi concluído. Tente novamente mais tarde."}), 503
+
 
 
 @app.route('/graphics')
 def show_graphs():
-    # Obtém os resultados armazenados na sessão
-    results = session.get('results', [])
-    
+    # Obtém o ID do arquivo armazenado na sessão
+    file_path = session.get('results_file_id')
+
+    if not file_path:
+        return "Nenhum dado encontrado! Inicie o scraping.", 400
+
+    # Caminho fixo para o arquivo de resultados
+    #file_path = os.path.join('scraping_results', file_id)
+
+    # Verifica se o arquivo existe
+    if not os.path.exists(file_path):
+        return "Arquivo de resultados não encontrado! Tente novamente mais tarde.", 404
+
+    # Lê os resultados do arquivo
+    with open(file_path, 'r', encoding='utf-8') as file:
+        results = json.load(file)
+
     if not results:
-        return "Nenhum dado encontrado!", 400
+        return "Nenhum resultado encontrado no arquivo!", 404
 
-    # Crie e retorne os gráficos (você pode adicionar a lógica de visualização aqui)
-    #return f"Gráficos gerados com {len(results)} resultados!"
-    #return atualizar_graficos('simples')
-    # Redireciona para o painel do Dash
-    return redirect('/')
-
+    # Redireciona para o painel de gráficos
+    return redirect('/graphics/')    
+   
 
 if __name__ == '__main__':
     app.run(debug=True)
